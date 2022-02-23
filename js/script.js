@@ -5,43 +5,51 @@ let main = () => {
   let result = '';
 
   while (i < 5) {
-    result = toString(game(i + 1));
+    result = game();
     if (result === 'won') playerPoints += 1;
     if (result === 'lost') cpuPoints += 1;
 
-    console.log(`ROUND ${i + 1}: Player: ${playerPoints}, CPU: ${cpuPoints}`);
     i += 1;
   }
+  alert(`main():\n\nWon: ${playerPoints}\nLost: ${cpuPoints}\nDraws: ${5 - playerPoints - cpuPoints}`);
 };
 
-let game = (roundNumber) => {
-  let cpuChoice = cpuSelection(roundNumber);
-  let playerChoice = playerSelection(roundNumber);
+let game = () => {
+  let cpuChoice = cpuSelection();
+  let playerChoice = playerSelection();
 
   let result = playRound(playerChoice, cpuChoice);
 
-  console.log(`Round ${roundNumber}: ${result}`);
-  alert(result);
+  if (result == 'won') {
+    alert(`game():\n\nyou WON!\nyour ${playerChoice} beats CPU's ${cpuChoice}!`)
+  }
+  else if (result == 'lost') {
+    alert(`game():\n\nyou LOST...\nCPU's ${cpuChoice} beats your ${playerChoice}!`)
+  }
+  else {
+    alert(`game():\n\nit's a DRAW!\nyour ${playerChoice} equals CPU's ${cpuChoice}!`)
+  }
 
+  return result.toString();
 };
 
-let cpuSelection = (roundNumber) => {
+let cpuSelection = () => {
   let choices = ['Rock', 'Paper', 'Scissors'];
 
   let choiceIndex = parseInt(Math.floor(Math.random() * 100) % 3);
 
-  console.log(`ROUND ${roundNumber}: CPU chose ${choices[choiceIndex]}`);
+  console.log(`cpuSelection():\n\nCPU chose ${choices[choiceIndex]}`);
   return choices[choiceIndex];
 };
 
-let playerSelection = (roundNumber) => {
-  let playerChoice = prompt(`ROUND ${roundNumber}: Rock, Paper or Scissors?: `);
-  console.log(`USER: ${playerChoice}`);
+let playerSelection = () => {
+  let playerChoice = prompt(`playerSelection():\n\nRock, Paper or Scissors? `);
+  console.log(`playerSelection():\n\nPlayer chose ${playerChoice}`);
   return playerChoice;
 };
 
 let playRound = (playerChoice, cpuChoice) => {
-  let result = '';
+  let result = 'error';
 
   // first evaluate if it's a draw
   if (
@@ -62,6 +70,8 @@ let playRound = (playerChoice, cpuChoice) => {
   else {
     result = 'lost';
   }
+
+  console.log(`playRound():\n\n${result}`);
 
   return result;
 };
