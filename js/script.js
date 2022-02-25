@@ -1,69 +1,108 @@
-let main = () => {
-  let i = parseInt(0);
-  let playerPoints = parseInt(0);
-  let cpuPoints = parseInt(0);
+const gameloop = (ev) => {
+  const playerChoice = ev.target.className;
+  const cpuChoice = cpuSelection(); // get a random choice from cpu
+
+  // update choices for both cpu and player
+  updateSelection(playerChoice, 'player');
+  updateSelection(cpuChoice, 'cpu');
+
   let result = '';
 
-  while (i < 5) {
-    result = game();
-    if (result === 'won') playerPoints += 1;
-    if (result === 'lost') cpuPoints += 1;
-
-    i += 1;
+  // compute outcome of this round
+  result = playRound(playerChoice, cpuChoice);
+  
+  if (result === 'won') {
+    playerPoints += 1;
+    updateScore(playerPoints, 'player');
   }
-  alert(`main():\n\nWon: ${playerPoints}\nLost: ${cpuPoints}\nDraws: ${5 - playerPoints - cpuPoints}`);
-};
-
-let game = () => {
-  let cpuChoice = cpuSelection();
-  let playerChoice = playerSelection();
-
-  let result = playRound(playerChoice, cpuChoice);
-
-  if (result == 'won') {
-    alert(`game():\n\nyou WON!\nyour ${playerChoice} beats CPU's ${cpuChoice}!`)
+  if (result === 'lost') {
+    cpuPoints += 1;
+    updateScore(cpuPoints, 'cpu');
   }
-  else if (result == 'lost') {
-    alert(`game():\n\nyou LOST...\nCPU's ${cpuChoice} beats your ${playerChoice}!`)
+
+  // verbose details of current round results
+  currentRoundResultsInDetail(playerChoice, cpuChoice, result);
+
+  // if player score reaches 5, stop the game, and show 'Final' before the scoreboard
+  // else keep this element hidden
+  let s = document.getElementById('final-result');
+  if (playerPoints < 5) {
+    s.style.display = 'none';
   }
   else {
-    alert(`game():\n\nit's a DRAW!\nyour ${playerChoice} equals CPU's ${cpuChoice}!`)
+    s.textContent = 'Final';
+    s.style.display = 'inline';
+    toggleEventListening(false);
+    announceWinner(playerPoints, cpuPoints);
+  }
+};
+
+const announceWinner = (playerPoints, cpuPoints) => {
+  if (playerPoints === cpuPoints) {
+    alert('It\'s a DRAW!');
+  }
+  if (playerPoints > cpuPoints) {
+    alert('You WON!!!');
+  }
+  else {
+    alert('You LOST...');
+  }
+};
+
+const currentRoundResultsInDetail = (playerChoice, cpuChoice, result) => {
+  const currentResult = document.getElementById('result');
+  
+  let newResultContent = '';
+  if (result === 'won') {
+    newResultContent = `Yay! your ${playerChoice} beats CPU's ${cpuChoice}`;
+    currentResult.classList.remove('lost');
+    currentResult.classList.add('won');
+  }
+  else if (result === 'lost') {
+    currentResult.classList.add('lost');
+    currentResult.classList.remove('won');
+    newResultContent = `Lost... CPU's ${cpuChoice} beats your ${playerChoice}`;
+  }
+  else {
+    currentResult.classList.remove('won');
+    currentResult.classList.remove('lost');
+    newResultContent = `It's a DRAW! Your ${playerChoice} equals CPU's ${cpuChoice}`;
   }
 
-  return result.toString();
+  currentResult.textContent = newResultContent;
 };
 
-let cpuSelection = () => {
-  let choices = ['Rock', 'Paper', 'Scissors'];
-
-  let choiceIndex = parseInt(Math.floor(Math.random() * 100) % 3);
-
-  console.log(`cpuSelection():\n\nCPU chose ${choices[choiceIndex]}`);
-  return choices[choiceIndex];
+const updateScore = (score, playerName) => {
+  document.querySelector(`.${playerName}-score .score`).textContent = score;
 };
 
-let playerSelection = () => {
-  let playerChoice = prompt(`playerSelection():\n\nRock, Paper or Scissors? `);
-  console.log(`playerSelection():\n\nPlayer chose ${playerChoice}`);
-  return playerChoice;
+const updateSelection = (choice, playerName) => {
+  document.querySelector(`.${playerName}-choice .choice`).textContent = choice;
 };
 
-let playRound = (playerChoice, cpuChoice) => {
-  let result = 'error';
+const cpuSelection = () => {
+  const choices = ['Rock', 'Paper', 'Scissors'];
+  const randIndex = parseInt(Math.floor(Math.random() * 100) % 3);
+
+  return choices[randIndex];
+};
+
+const playRound = (playerChoice, cpuChoice) => {
+  let result = '';
 
   // first evaluate if it's a draw
   if (
-    ((playerChoice == 'Rock' || playerChoice == 'rock' || playerChoice == 'ROCK') && cpuChoice == 'Rock') ||
-    ((playerChoice == 'Paper' || playerChoice == 'paper' || playerChoice == 'PAPER') && cpuChoice == 'Paper') ||
-    ((playerChoice == 'Scissors' || playerChoice == 'scissors' || playerChoice == 'SCISSORS') && cpuChoice == 'Scissors')
+    (playerChoice == 'rock' && cpuChoice == 'Rock') ||
+    (playerChoice == 'paper' && cpuChoice == 'Paper') ||
+    (playerChoice == 'scissors' && cpuChoice == 'Scissors')
   ) {
     result = 'draw';
   }
   // then decide the win situations
   else if (
-    ((playerChoice == 'Scissors' || playerChoice == 'scissors' || playerChoice == 'SCISSORS') && cpuChoice == 'Paper') ||
-    ((playerChoice == 'Paper' || playerChoice == 'paper' || playerChoice == 'PAPER') && cpuChoice == 'Rock') ||
-    ((playerChoice == 'Rock' || playerChoice == 'rock' || playerChoice == 'ROCK') && cpuChoice == 'Scissors')) {
+    (playerChoice == 'scissors' && cpuChoice == 'Paper') ||
+    (playerChoice == 'paper' && cpuChoice == 'Rock') ||
+    (playerChoice == 'rock' && cpuChoice == 'Scissors')) {
     result = 'won';
   }
   // if it isn't a win or draw, then it's a loss :(
@@ -71,9 +110,31 @@ let playRound = (playerChoice, cpuChoice) => {
     result = 'lost';
   }
 
-  console.log(`playRound():\n\n${result}`);
-
   return result;
 };
 
-main();
+
+const toggleEventListening = (flag) => {
+  const buttons = document.querySelectorAll('button');
+
+  if (flag) {
+    buttons.forEach((button) => {
+      button.addEventListener('click', gameloop);
+    });
+
+    return;
+  }
+
+  buttons.forEach((button) => {
+    button.removeEventListener('click', gameloop);
+  });
+}
+
+let playerPoints = parseInt(0);
+let cpuPoints = parseInt(0);
+
+// initially set both scores to zero
+updateScore(0, 'player');
+updateScore(0, 'cpu');
+
+toggleEventListening(true);

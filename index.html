@@ -8,8 +8,23 @@
   <title>Rock Paper Scissors</title>
 </head>
 <body>
-  <p>See console to know what the CPU chose vs what you chose</p>
-
+  <div class="main">
+    <div class="scoreboard">
+      <div><p id="final-result"></p></div>
+      <div class="player-score">Player Score: <p class="score">0</p></div>
+      <div class="cpu-score">CPU Score: <p class="score">0</p></div>
+    </div>
+    <div class="choices">
+      <div class="player-choice">Player Chose: <p class="choice"> </p></div>
+      <div class="cpu-choice">CPU Chose: <p class="choice"> </p></div>
+    </div>
+    <div class="actions">
+      <button class="rock">Rock</button>
+      <button class="paper">Paper</button>
+      <button class="scissors">Scissors</button>
+    </div>
+    <div class="current-round"><p id="result"></p></div>
+  </div>
   <script src="./js/script.js"></script>
 </body>
 </html>
