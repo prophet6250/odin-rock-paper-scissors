@@ -1,0 +1,40 @@
+.actions {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.choices, .scoreboard {
+  font-size: 50px;
+  font-weight: bold;
+  font-family: 'Courier New', Courier, monospace;
+
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 100px;
+}
+
+.choices p, .scoreboard p {
+  display: inline;
+}
+
+button {
+  padding: 15px 30px;
+  background-color: #24a0ed;
+  color: white;
+  border: 2px solid #24a0ed;
+  border-radius: 5px;
+}
+
+.current-round {
+  font-size: 50px;
+  margin-top: 50px;
+  text-align: center;
+}
+
+.won {
+  color: green;
+}
+
+.lost {
+  color: red;
+}
